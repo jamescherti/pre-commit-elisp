@@ -10,7 +10,7 @@ These pre-commit hooks enforce syntactic correctness, successful byte-compilatio
 
 ## Installation
 
-1. Install pre-commit ([pre-commit.com](https://pre-commit.com/)).
+1. Install [pre-commit](https://pre-commit.com/).
 
 2. Add this repository as a local hook in your `.pre-commit-config.yaml`:
 
