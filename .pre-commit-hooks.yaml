@@ -1,0 +1,19 @@
+---
+
+- id: emacs-lisp-check-parens
+  name: emacs-lisp-check-parens
+  entry: hooks/emacs-lisp-check-parens.sh
+  language: script
+  files: \.el$
+
+- id: emacs-lisp-byte-compile
+  name: emacs-lisp-byte-compile
+  entry: hooks/emacs-lisp-byte-compile.sh
+  language: script
+  files: \.el$
+
+- id: emacs-lisp-indent
+  name: emacs-lisp-indent
+  entry: hooks/emacs-lisp-indent.sh
+  language: script
+  files: \.el$
