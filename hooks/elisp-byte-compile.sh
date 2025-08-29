@@ -27,7 +27,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-emacs --batch --eval \
+exec emacs --batch --eval \
   "(with-temp-buffer
      (setq-local lexical-binding t)
      (setq byte-compile-warnings t)

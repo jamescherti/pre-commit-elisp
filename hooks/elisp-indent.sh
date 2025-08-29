@@ -27,7 +27,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-emacs --batch --eval \
+exec emacs --batch --eval \
   '(dolist (file command-line-args-left)
      (message "[ELISP INDENT] %s" file)
      (with-temp-buffer
