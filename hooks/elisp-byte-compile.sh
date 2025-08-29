@@ -28,7 +28,8 @@
 #
 
 emacs --batch --eval \
-  '(let ((failure nil)
+  '(setq byte-compile-warnings t)
+   (let ((failure nil)
          (original-load-path (copy-sequence load-path)))
      (push (expand-file-name ".") original-load-path)
      (dolist (file command-line-args-left)
@@ -36,8 +37,8 @@ emacs --batch --eval \
        (let ((dir (file-name-directory file))
              (load-path (copy-sequence original-load-path)))
          (push dir load-path)
-         (let ((default-directory dir)
-               (byte-compile-warnings t))
+
+         (let ((default-directory dir))
            (if (byte-compile-file file)
                (message "[ELISP BYTE-COMPILE] Success: %s" file)
              (setq failure t)

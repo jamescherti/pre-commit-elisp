@@ -32,7 +32,7 @@ repos:
 3. Install the hooks in your project:
 
 ```bash
-pre-commit install --config .pre-commit-config.yaml
+pre-commit install
 ```
 
 4. Run hooks manually on all files (optional):
