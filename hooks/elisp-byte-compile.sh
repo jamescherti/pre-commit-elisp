@@ -28,21 +28,23 @@
 #
 
 emacs --batch --eval \
-  '(let ((failure nil)
-         (original-load-path (copy-sequence load-path)))
-     (push (expand-file-name \".\") original-load-path)
-     (dolist (file command-line-args-left)
-       (message \"HI %S\" file)
-       (setq file (expand-file-name file))
-       (let ((dir (file-name-directory file))
-             (load-path (copy-sequence original-load-path)))
-         (push dir load-path)
+  "(with-temp-buffer
+     (setq-local lexical-binding t)
+     (setq byte-compile-warnings t)
+     (let ((failure nil)
+           (original-load-path (copy-sequence load-path)))
+       (push (expand-file-name \".\") original-load-path)
+       (dolist (file command-line-args-left)
+         (setq file (expand-file-name file))
+         (let ((dir (file-name-directory file))
+               (load-path (copy-sequence original-load-path)))
+           (push dir load-path)
 
-         (let ((default-directory dir))
-           (if (byte-compile-file file)
-               (message \"[ELISP BYTE-COMPILE] Success: %s\" file)
-             (setq failure t)
-             (message \"[ELISP BYTE-COMPILE] Failure: %s\" file)))))
-     (when failure
-       (kill-emacs 1)))' \
+           (let ((default-directory dir))
+             (if (byte-compile-file file)
+                 (message \"[ELISP BYTE-COMPILE] Success: %s\" file)
+               (setq failure t)
+               (message \"[ELISP BYTE-COMPILE] Failure: %s\" file)))))
+       (when failure
+         (kill-emacs 1))))" \
   "$@"

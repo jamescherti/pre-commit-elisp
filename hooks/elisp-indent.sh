@@ -31,6 +31,7 @@ emacs --batch --eval \
   '(dolist (file command-line-args-left)
      (message "[ELISP INDENT] %s" file)
      (with-temp-buffer
+       (setq-local lexical-binding t)
        (insert-file-contents file)
        (let ((beg (point-min))
              (end (point-max)))

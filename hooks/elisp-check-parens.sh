@@ -31,6 +31,7 @@
 emacs --batch --eval '(dolist (file command-line-args-left)
                         (message "[ELISP CHECK-PARENS] %s" file)
                         (with-temp-buffer
+                          (setq-local lexical-binding t)
                           (emacs-lisp-mode)
                           (insert-file-contents file)
                           (check-parens)))' "$@"
