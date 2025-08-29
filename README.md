@@ -18,7 +18,7 @@ This setup ensures that your code remains syntactically correct, properly compil
 ---
 
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/jamescherti/pre-commit-elisp
     rev: main
     hooks:
       - id: elisp-check-parens
