@@ -33,6 +33,10 @@ exec emacs --batch --eval \
      (with-temp-buffer
        (setq-local lexical-binding t)
        (emacs-lisp-mode)
+       (setq-local indent-tabs-mode nil)
+       (setq-local lisp-body-indent 2)
+       (setq-local lisp-indent-offset nil)
+       (setq-local tab-width 2)
        (insert-file-contents file)
        (let ((beg (point-min))
              (end (point-max)))
