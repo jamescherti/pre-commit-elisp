@@ -38,6 +38,11 @@ exec emacs --batch --eval \
        (setq-local lisp-indent-offset nil)
        (setq-local tab-width 2)
        (insert-file-contents file)
+
+       ;; TODO Leading tabs only
+       ;; (save-excursion
+       ;;   (untabify (point-min) (point-max)))
+
        (let ((beg (point-min))
              (end (point-max)))
          (save-restriction
@@ -47,5 +52,6 @@ exec emacs --batch --eval \
                (indent-according-to-mode)
              (goto-char beg)
              (indent-region beg end))))
+
        (write-region (point-min) (point-max) file)))' \
   "$@"
