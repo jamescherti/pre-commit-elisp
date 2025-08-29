@@ -19,7 +19,7 @@ These pre-commit hooks enforce syntactic correctness, successful byte-compilatio
 
 repos:
   - repo: https://github.com/jamescherti/pre-commit-elisp
-    rev: main
+    rev: v1.0.0
     hooks:
       - id: elisp-check-parens
       - id: elisp-byte-compile
