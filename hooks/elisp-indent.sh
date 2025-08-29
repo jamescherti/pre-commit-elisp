@@ -32,6 +32,7 @@ exec emacs --batch --eval \
      (message "[ELISP INDENT] %s" file)
      (with-temp-buffer
        (setq-local lexical-binding t)
+       (emacs-lisp-mode)
        (insert-file-contents file)
        (let ((beg (point-min))
              (end (point-max)))
@@ -41,4 +42,6 @@ exec emacs --batch --eval \
                                (= end (line-beginning-position 2)))
                (indent-according-to-mode)
              (goto-char beg)
-             (indent-region beg end))))))' "$@"
+             (indent-region beg end))))
+       (write-region (point-min) (point-max) file)))' \
+  "$@"
