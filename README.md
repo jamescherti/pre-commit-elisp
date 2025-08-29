@@ -1,10 +1,12 @@
-# pre-commit-emacs-lisp
+# pre-commit-emacs-lisp - Pre-commit hooks for Emacs Lisp (Elisp) Git repositories
 
-This repository provides **pre-commit hooks** for **Emacs Lisp (Elisp)** projects. The hooks help maintain code quality by automatically performing the following checks before committing:
+This repository offers a collection of **[pre-commit](https://pre-commit.com/) hooks** specifically designed for **Emacs Lisp (Elisp)** projects. These hooks enforce code quality and consistency by performing automated checks on `.el` files prior to committing changes:
 
-* emacs-lisp-check-parens: **Check parentheses** in `.el` files to ensure they are balanced.
-* emacs-lisp-byte-compile: **Byte-compile** `.el` files to detect compilation errors.
-* emacs-lisp-indent: **Indent** `.el` files according to Emacs Lisp style conventions.
+* **`emacs-lisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
+* **`emacs-lisp-byte-compile`**: Byte-compiles `.el` files to identify compilation errors early.
+* **`emacs-lisp-indent`**: Reindents `.el` files to adhere to standard Emacs Lisp formatting conventions.
+
+This setup ensures that your code remains syntactically correct, properly compiled, and consistently formatted across the repository.
 
 ## Installation
 
