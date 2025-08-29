@@ -1,11 +1,11 @@
 #!/bin/bash
 #
 # Author: James Cherti
-# URL: https://github.com/jamescherti/pre-commit-emacs-lisp
+# URL: https://github.com/jamescherti/pre-commit-elisp
 #
 # Description:
 # ------------
-# Byte-compile Elisp files to detect compilation errors.
+# Indent Elisp files according to Emacs Lisp style conventions.
 #
 # License:
 # --------
@@ -27,13 +27,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-emacs --batch --eval '(dolist (file command-line-args-left)
-                        (setq file (expand-file-name file))
-                        (let ((dir (file-name-directory file)))
-                          (push (expand-file-name ".") load-path)
-                          (push dir load-path)
-                          (message "[BYTE-COMPILE] %s" file)
-                          (let ((default-directory dir))
-                            (unless (byte-compile-file file)
-                              (message "Compilation failed: %s" file)
-                              (kill-emacs 1)))))' "$@"
+emacs --batch --eval \
+  '(dolist (file command-line-args-left)
+     (with-temp-buffer
+       (insert-file-contents file)
+       (let ((beg (point-min))
+             (end (point-max)))
+         (save-restriction
+           (narrow-to-region beg end)
+           (if (save-excursion (goto-char beg)
+                               (= end (line-beginning-position 2)))
+               (indent-according-to-mode)
+             (goto-char beg)
+             (indent-region beg end))))))' "$@"

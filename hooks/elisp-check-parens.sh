@@ -1,7 +1,8 @@
 #!/bin/bash
+#!/bin/bash
 #
 # Author: James Cherti
-# URL: https://github.com/jamescherti/pre-commit-emacs-lisp
+# URL: https://github.com/jamescherti/pre-commit-elisp
 #
 # Description:
 # ------------
@@ -27,16 +28,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-emacs --batch --eval \
-  '(dolist (file command-line-args-left)
-     (with-temp-buffer
-       (insert-file-contents file)
-       (let ((beg (point-min))
-             (end (point-max)))
-         (save-restriction
-           (narrow-to-region beg end)
-           (if (save-excursion (goto-char beg)
-                               (= end (line-beginning-position 2)))
-               (indent-according-to-mode)
-             (goto-char beg)
-             (indent-region beg end))))))' "$@"
+emacs --batch --eval '(dolist (file command-line-args-left)
+                        (message "[CHECK ELISP PARENS] %s" file)
+                        (with-temp-buffer
+                          (emacs-lisp-mode)
+                          (insert-file-contents file)
+                          (check-parens)))' "$@"

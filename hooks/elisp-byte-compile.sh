@@ -1,12 +1,11 @@
 #!/bin/bash
-#!/bin/bash
 #
 # Author: James Cherti
-# URL: https://github.com/jamescherti/pre-commit-emacs-lisp
+# URL: https://github.com/jamescherti/pre-commit-elisp
 #
 # Description:
 # ------------
-# Indent Elisp files according to Emacs Lisp style conventions.
+# Byte-compile Elisp files to detect compilation errors.
 #
 # License:
 # --------
@@ -29,8 +28,12 @@
 #
 
 emacs --batch --eval '(dolist (file command-line-args-left)
-                        (message "[CHECK ELISP PARENS] %s" file)
-                        (with-temp-buffer
-                          (emacs-lisp-mode)
-                          (insert-file-contents file)
-                          (check-parens)))' "$@"
+                        (setq file (expand-file-name file))
+                        (let ((dir (file-name-directory file)))
+                          (push (expand-file-name ".") load-path)
+                          (push dir load-path)
+                          (message "[BYTE-COMPILE] %s" file)
+                          (let ((default-directory dir))
+                            (unless (byte-compile-file file)
+                              (message "Compilation failed: %s" file)
+                              (kill-emacs 1)))))' "$@"

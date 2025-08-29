@@ -1,19 +1,19 @@
 ---
 
-- id: emacs-lisp-check-parens
-  name: emacs-lisp-check-parens
-  entry: hooks/emacs-lisp-check-parens.sh
+- id: elisp-check-parens
+  name: elisp-check-parens
+  entry: hooks/elisp-check-parens.sh
   language: script
   files: \.el$
 
-- id: emacs-lisp-byte-compile
-  name: emacs-lisp-byte-compile
-  entry: hooks/emacs-lisp-byte-compile.sh
+- id: elisp-byte-compile
+  name: elisp-byte-compile
+  entry: hooks/elisp-byte-compile.sh
   language: script
   files: \.el$
 
-- id: emacs-lisp-indent
-  name: emacs-lisp-indent
-  entry: hooks/emacs-lisp-indent.sh
+- id: elisp-indent
+  name: elisp-indent
+  entry: hooks/elisp-indent.sh
   language: script
   files: \.el$

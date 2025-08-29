@@ -1,10 +1,10 @@
-# pre-commit-emacs-lisp - Pre-commit hooks for Emacs Lisp (Elisp) Git repositories
+# pre-commit-elisp - Pre-commit hooks for Emacs Lisp (Elisp) Git repositories
 
 This repository offers a collection of **[pre-commit](https://pre-commit.com/) hooks** specifically designed for **Emacs Lisp (Elisp)** projects. These hooks enforce code quality and consistency by performing automated checks on `.el` files prior to committing changes:
 
-* **`emacs-lisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
-* **`emacs-lisp-byte-compile`**: Byte-compiles `.el` files to identify compilation errors early.
-* **`emacs-lisp-indent`**: Reindents `.el` files to adhere to standard Emacs Lisp formatting conventions.
+* **`elisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
+* **`elisp-byte-compile`**: Byte-compiles `.el` files to identify compilation errors early.
+* **`elisp-indent`**: Reindents `.el` files to adhere to standard Emacs Lisp formatting conventions.
 
 This setup ensures that your code remains syntactically correct, properly compiled, and consistently formatted across the repository.
 
@@ -21,12 +21,12 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: main
     hooks:
-      - id: emacs-lisp-check-parens
-      - id: emacs-lisp-byte-compile
+      - id: elisp-check-parens
+      - id: elisp-byte-compile
 
       # Optional:
       # NOTE: This change the indentation.
-      # - id: emacs-lisp-indent
+      # - id: elisp-indent
 ```
 
 3. Install the hooks in your project:
@@ -43,7 +43,7 @@ pre-commit run --all-files
 
 ## License
 
-The pre-commit-emacs-lisp hooks have been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.
+The pre-commit-elisp hooks have been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.
 
 Copyright (C) 2025 [James Cherti](https://www.jamescherti.com)
 
@@ -55,7 +55,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 ## Links
 
-- [pre-commit-emacs-lisp @GitHub](https://github.com/jamescherti/pre-commit-emacs-lisp)
+- [pre-commit-elisp @GitHub](https://github.com/jamescherti/pre-commit-elisp)
 
 Other Emacs packages by the same author:
 - [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d): This repository hosts a minimal Emacs configuration designed to serve as a foundation for your vanilla Emacs setup and provide a solid base for an enhanced Emacs experience.
