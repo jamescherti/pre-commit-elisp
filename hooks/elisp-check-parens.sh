@@ -29,7 +29,7 @@
 #
 
 emacs --batch --eval '(dolist (file command-line-args-left)
-                        (message "[CHECK ELISP PARENS] %s" file)
+                        (message "[ELISP CHECK-PARENS] %s" file)
                         (with-temp-buffer
                           (emacs-lisp-mode)
                           (insert-file-contents file)

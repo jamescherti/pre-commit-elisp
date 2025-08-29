@@ -27,13 +27,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-emacs --batch --eval '(dolist (file command-line-args-left)
-                        (setq file (expand-file-name file))
-                        (let ((dir (file-name-directory file)))
-                          (push (expand-file-name ".") load-path)
-                          (push dir load-path)
-                          (message "[BYTE-COMPILE] %s" file)
-                          (let ((default-directory dir))
-                            (unless (byte-compile-file file)
-                              (message "Compilation failed: %s" file)
-                              (kill-emacs 1)))))' "$@"
+emacs --batch --eval \
+  '(let ((failure nil)
+         (original-load-path (copy-sequence load-path)))
+     (push (expand-file-name ".") original-load-path)
+     (dolist (file command-line-args-left)
+       (setq file (expand-file-name file))
+       (let ((dir (file-name-directory file))
+             (load-path (copy-sequence original-load-path)))
+         (push dir load-path)
+         (let ((default-directory dir)
+               (byte-compile-warnings t))
+           (if (byte-compile-file file)
+               (message "[ELISP BYTE-COMPILE] Success: %s" file)
+             (setq failure t)
+             (message "[ELISP BYTE-COMPILE] Failure: %s" file)))))
+     (when failure
+       (kill-emacs 1)))' "$@"
