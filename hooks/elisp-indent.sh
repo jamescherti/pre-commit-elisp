@@ -9,7 +9,7 @@
 #
 # License:
 # --------
-# Copyright (C) 2012-2025 James Cherti
+# Copyright (C) 2025 James Cherti
 #
 # Distributed under terms of the GNU General Public License version 3.
 #
@@ -28,21 +28,42 @@
 #
 
 exec emacs --batch --eval \
-  '(dolist (file command-line-args-left)
-     (message "[ELISP INDENT] %s" file)
+  "(dolist (file command-line-args-left)
+     (message \"[ELISP INDENT] %s\" file)
      (with-temp-buffer
+       (put 'cl-letf 'lisp-indent-function 1)
+       (put 'lightemacs-use-package 'lisp-indent-function 0)
+       (put 'lightemacs-define-keybindings 'lisp-indent-function 1)
+       (put 'lightemacs-verbose-message 'lisp-indent-function 0)
+       (put 'lightemacs-save-window-hscroll 'lisp-indent-function 0)
+       (put 'lightemacs-define-mode-add-hook-to 'lisp-indent-function 0)
+       (put 'lightemacs-save-window-hscroll 'lisp-indent-function 0)
+       (put 'lightemacs-save-window-start 'lisp-indent-function 0)
+
+       ;; Modify settings
        (setq-local lexical-binding t)
        (emacs-lisp-mode)
+       ;; (setq-local standard-indent 2)
        (setq-local indent-tabs-mode nil)
        (setq-local lisp-body-indent 2)
-       (setq-local lisp-indent-offset nil)
+       ;; (setq lisp-indent-function #'lisp-indent-function)
+       ;; (setq-local lisp-indent-offset nil)
        (setq-local tab-width 2)
        (insert-file-contents file)
 
-       ;; TODO Leading tabs only
-       ;; (save-excursion
-       ;;   (untabify (point-min) (point-max)))
+       ;; Remove tabs
+       (save-excursion
+         (goto-char (point-min))
+         (while (not (eobp))
+           (let ((line-beg (line-beginning-position)))
+             (goto-char line-beg)
+             (skip-chars-forward \" \t\")
+             (let ((indent-end (point)))
+               (when (> indent-end line-beg)
+                 (untabify line-beg indent-end))))
+           (forward-line 1)))
 
+       ;; Reindent
        (let ((beg (point-min))
              (end (point-max)))
          (save-restriction
@@ -53,5 +74,5 @@ exec emacs --batch --eval \
              (goto-char beg)
              (indent-region beg end))))
 
-       (write-region (point-min) (point-max) file)))' \
+       (write-region (point-min) (point-max) file)))" \
   "$@"

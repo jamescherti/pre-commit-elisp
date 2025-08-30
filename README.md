@@ -4,6 +4,7 @@ The [pre-commit-elisp](https://github.com/jamescherti/pre-commit-elisp) reposito
 
 * **`elisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
 * **`elisp-byte-compile`**: Byte-compiles `.el` files to identify compilation errors early.
+* **`elisp-indent`**: Indent Elisp files according to Emacs Lisp style conventions.
 
 These pre-commit hooks enforce syntactic correctness, successful byte-compilation, and consistent code formatting, ensuring a high standard of code quality and maintainability throughout the repository.
 
