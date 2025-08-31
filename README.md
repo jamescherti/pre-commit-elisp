@@ -24,8 +24,11 @@ repos:
       # Validate that all parentheses in .el files are correctly balanced
       - id: elisp-check-parens
 
-      # Byte-compile .el files to identify compilation errors early
-      - id: elisp-byte-compile
+      # Optional: Byte-compile .el files to identify compilation errors early
+      # - id: elisp-byte-compile
+
+      # Optional: Indent Elisp files according to Emacs Lisp style conventions
+      # - id: elisp-indent
 ```
 
 3. Install the hooks in your project:
