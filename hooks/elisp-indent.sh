@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Author: James Cherti
 # URL: https://github.com/jamescherti/pre-commit-elisp
