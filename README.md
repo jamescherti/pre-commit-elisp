@@ -19,7 +19,7 @@ These pre-commit hooks enforce syntactic correctness, successful byte-compilatio
 
 repos:
   - repo: https://github.com/jamescherti/pre-commit-elisp
-    rev: v1.0.1
+    rev: v1.0.2
     hooks:
       # Validate that all parentheses in .el files are correctly balanced
       - id: elisp-check-parens
