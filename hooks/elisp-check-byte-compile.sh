@@ -5,11 +5,10 @@
 #
 # Description:
 # ------------
-# Byte-compile Emacs Lisp files into temporary files to detect compilation
-# errors without modifying the original source files.
-#
-# All generated temporary files, including compiled .elc files, are removed
-# automatically after compilation to avoid leaving residual artifacts.
+# This script byte-compiles the Emacs Lisp files provided as arguments into
+# temporary files. All generated temporary files, including the compiled .elc
+# files, are automatically deleted after compilation to ensure no residual
+# artifacts remain.
 #
 # License:
 # --------
