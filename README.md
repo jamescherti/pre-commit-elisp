@@ -3,7 +3,7 @@
 The [pre-commit-elisp](https://github.com/jamescherti/pre-commit-elisp) repository offers pre-commit hooks for **Emacs Lisp (Elisp)** projects. These hooks enforce code quality and consistency by performing automated checks on `.el` files prior to committing changes:
 
 * **`elisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
-* **`elisp-byte-compile`**: Byte-compiles `.el` files to identify compilation errors early.
+* **`elisp-check-byte-compile`**: Byte-compile Emacs Lisp files into temporary files to detect compilation errors without modifying the original source files. All generated temporary files, including compiled .elc files, are removed automatically after compilation to avoid leaving residual artifacts.
 * **`elisp-indent`**: Indent Elisp files according to Emacs Lisp style conventions.
 
 These pre-commit hooks enforce syntactic correctness, successful byte-compilation, and consistent code formatting, ensuring a high standard of code quality and maintainability throughout the repository.
@@ -25,7 +25,7 @@ repos:
       - id: elisp-check-parens
 
       # Optional: Byte-compile .el files to identify compilation errors early
-      # - id: elisp-byte-compile
+      # - id: elisp-check-byte-compile
 
       # Optional: Indent Elisp files according to Emacs Lisp style conventions
       # - id: elisp-indent
