@@ -6,6 +6,12 @@
   language: script
   files: \.el$
 
+- id: elisp-check-byte-compile
+  name: elisp-check-byte-compile
+  entry: hooks/elisp-check-byte-compile.sh
+  language: script
+  files: \.el$
+
 - id: elisp-byte-compile
   name: elisp-byte-compile
   entry: hooks/elisp-byte-compile.sh
