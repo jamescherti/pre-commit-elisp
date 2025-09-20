@@ -7,6 +7,10 @@
 # ------------
 # Byte-compile Elisp files to detect compilation errors.
 #
+# Alternative approach: To prevent .elc files from appearing in the repository,
+# use `elisp-check-byte-compile` instead of `elisp-byte-compile`. It performs
+# compilation checks entirely in temporary files.
+#
 # License:
 # --------
 # Copyright (C) 2025 James Cherti
