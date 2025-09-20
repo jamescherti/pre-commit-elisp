@@ -42,7 +42,7 @@ exec emacs --batch --eval \
          (setq file (expand-file-name file))
          (let ((dir (file-name-directory file))
                (load-path (copy-sequence original-load-path))
-               (tmpfile (make-temp-file \"elc-\" nil \".el\")))
+               (tmpfile (make-temp-file \"check-byte-compile-\" nil \".el\")))
            (unwind-protect
                (progn
                  (push dir load-path)
