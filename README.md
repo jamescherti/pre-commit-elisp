@@ -8,6 +8,8 @@ The [pre-commit-elisp](https://github.com/jamescherti/pre-commit-elisp) reposito
 
 These pre-commit hooks enforce syntactic correctness, successful byte-compilation, and consistent code formatting, ensuring a high standard of code quality and maintainability throughout the repository.
 
+If this enhances your workflow, please show your support by **⭐ starring pre-commit-elisp on GitHub** to help more Emacs users discover its benefits.
+
 ## Installation
 
 1. Install [pre-commit](https://pre-commit.com/).
