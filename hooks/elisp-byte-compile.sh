@@ -34,7 +34,42 @@
 exec emacs --batch --eval \
   "(with-temp-buffer
      (setq-local lexical-binding t)
+
+     ;; Add the root directory of the Git repository to load-path
+     (let ((root (vc-call-backend 'Git 'root default-directory)))
+       (if (not root)
+           (error
+            \"Unable to determine the Git root directory of %s\"
+            default-directory)
+         (let ((default-directory (expand-file-name root)))
+           ;; Load .dir-locals.el
+           (put 'pre-commit-elisp-load-path 'safe-local-variable
+                (lambda (v) t))  ; accept any value
+           (hack-dir-local-variables-non-file-buffer)
+
+           ;; Recursively add other directories (DISABLED)
+           (unless (boundp 'pre-commit-elisp-load-path)
+             (setq pre-commit-elisp-load-path (list \".\")))
+
+           (dolist (dir pre-commit-elisp-load-path)
+             (let ((default-directory (file-name-as-directory
+                                       (expand-file-name dir))))
+               ;; Push the current directory to load path
+               (if (string-suffix-p \"/\" dir)
+                   (progn
+                     (message \"%s%s%s\"
+                              \"[ELISP CHECK-BYTE-COMPILE] \"
+                              \"Add recursively to load-path: \"
+                              default-directory)
+                     (normal-top-level-add-subdirs-to-load-path))
+                 (progn
+                   (message
+                    \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                    default-directory)
+                   (push default-directory load-path))))))))
+
      (setq byte-compile-warnings t)  ; Strict mode
+     ;; TODO: check before adding
      (push (expand-file-name \".\") load-path)
      (let ((failure nil)
            (original-load-path (copy-sequence load-path)))

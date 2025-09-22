@@ -45,6 +45,28 @@ pre-commit install
 pre-commit run --all-files
 ```
 
+## Customizations
+
+#### Customizing load-path
+
+Scripts such as `elisp-check-byte-compile` and `elisp-byte-compile` support customizing the `load-path` variable using a `.dir-locals.el` variable `pre-commit-elisp-load-path`. This variable allows specifying the directories that should be included in the `load-path` without modifying the scripts themselves, ensuring that dependencies and libraries located in the project or its subdirectories are correctly available for byte-compilation.
+
+Customizing the `load-path` allows the byte-compilation scripts, such as `elisp-check-byte-compile`, to **find and load project-specific Emacs Lisp files** during compilation.
+
+Here is an example of a `.dir-locals.el` file to place at the root of the Git repository:
+
+```elisp
+((nil . ((pre-commit-elisp-load-path . ("." "lib/" "utils")))))
+```
+
+The `pre-commit-elisp-load-path` list is a **list of directories** relative to the Git repository root or project directory.
+
+Each entry in the list determines how it is added to `load-path`:
+
+1. **Directory ends with a slash (`/`)**: Recursively adds the directory and all its subdirectories to `load-path`. Example: `"lib/"` adds `lib/` and all its subdirectories.
+
+2. **Directory does not end with a slash**: The directory is added non-recursively. Example: `"utils"` adds only the `utils` directory, not its subdirectories.
+
 ## License
 
 The pre-commit-elisp hooks have been written by [James Cherti](https://www.jamescherti.com/) and is distributed under terms of the GNU General Public License version 3, or, at your choice, any later version.

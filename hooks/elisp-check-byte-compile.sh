@@ -43,32 +43,30 @@ exec emacs --batch --eval \
             default-directory)
          (let ((default-directory (expand-file-name root)))
            ;; Load .dir-locals.el
-           (put 'elisp-check-byte-compile-load-path 'safe-local-variable
+           (put 'pre-commit-elisp-load-path 'safe-local-variable
                 (lambda (v) t))  ; accept any value
            (hack-dir-local-variables-non-file-buffer)
 
            ;; Recursively add other directories (DISABLED)
-           ;; TODO: Add an option for this
-           (unless (boundp 'elisp-check-byte-compile-load-path)
-             (setq elisp-check-byte-compile-load-path (list \".\")))
+           (unless (boundp 'pre-commit-elisp-load-path)
+             (setq pre-commit-elisp-load-path (list \".\")))
 
-           (when (bound-and-true-p elisp-check-byte-compile-load-path)
-             (dolist (dir elisp-check-byte-compile-load-path)
-               (let ((default-directory (file-name-as-directory
-                                         (expand-file-name dir))))
-                 ;; Push the current directory to load path
-                 (if (string-suffix-p \"/\" dir)
-                     (progn
-                       (message \"%s%s%s\"
-                                \"[ELISP CHECK-BYTE-COMPILE] \"
-                                \"Add recursively to load-path: \"
-                                default-directory)
-                       (normal-top-level-add-subdirs-to-load-path))
+           (dolist (dir pre-commit-elisp-load-path)
+             (let ((default-directory (file-name-as-directory
+                                       (expand-file-name dir))))
+               ;; Push the current directory to load path
+               (if (string-suffix-p \"/\" dir)
                    (progn
-                     (message
-                       \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
-                       default-directory)
-                     (push default-directory load-path)))))))))
+                     (message \"%s%s%s\"
+                              \"[ELISP CHECK-BYTE-COMPILE] \"
+                              \"Add recursively to load-path: \"
+                              default-directory)
+                     (normal-top-level-add-subdirs-to-load-path))
+                 (progn
+                   (message
+                    \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                    default-directory)
+                   (push default-directory load-path))))))))
 
      (let ((failure nil)
            (byte-compile-warnings t)  ; Strict mode
