@@ -33,15 +33,27 @@
 exec emacs --batch --eval \
   "(progn
      (require 'bytecomp)
+
+     ;; Add the whole repository to load-path
+     ;; (when-let* ((root (vc-call-backend 'Git 'root default-directory)))
+     ;;   (let ((default-directory (expand-file-name root)))
+     ;;     (message \"Add all directories recursively to load-path: %s\"
+     ;;              default-directory)
+     ;;     (normal-top-level-add-subdirs-to-load-path)))
+
      (let ((failure nil)
            (byte-compile-warnings t)
            (original-load-path (copy-sequence load-path)))
        (push (expand-file-name \".\") original-load-path)
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
-         (let ((dir (file-name-directory file))
-               (load-path (copy-sequence original-load-path))
-               (tmpfile (make-temp-file \"check-byte-compile-\" nil \".el\")))
+         (let* ((dir (file-name-directory file))
+                (load-path (copy-sequence original-load-path))
+                (file-sans-ext (file-name-sans-extension
+                                (file-name-nondirectory file)))
+                (tmpfile (make-temp-file (concat file-sans-ext \"-\")
+                                         nil
+                                         \".el\")))
            (unwind-protect
                (progn
                  (push dir load-path)
