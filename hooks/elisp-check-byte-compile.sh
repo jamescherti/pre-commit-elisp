@@ -31,20 +31,36 @@
 #
 
 exec emacs --batch --eval \
-  "(progn
-     (require 'bytecomp)
+  "(with-temp-buffer
+     (setq-local lexical-binding t)
+     (require 'bytecomp nil t)
 
-     ;; Add the whole repository to load-path
-     ;; (when-let* ((root (vc-call-backend 'Git 'root default-directory)))
-     ;;   (let ((default-directory (expand-file-name root)))
-     ;;     (message \"Add all directories recursively to load-path: %s\"
-     ;;              default-directory)
-     ;;     (normal-top-level-add-subdirs-to-load-path)))
+     ;; Add the root directory of the Git repository to load-path
+     (let ((root (vc-call-backend 'Git 'root default-directory)))
+       (if (not root)
+           (error
+            \"Unable to determine the Git root directory of %s\"
+            default-directory)
+         (let ((default-directory (expand-file-name root)))
+           ;; Push the current directory to load path
+           (message \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                    default-directory)
+           (push default-directory load-path)
+
+           ;; Recursively add other directories (DISABLED)
+           ;; TODO: Add an option for this
+           ;; (message
+           ;;   \"%s%s\"
+           ;;   \"[ELISP CHECK-BYTE-COMPILE] \"
+           ;;   \"Add recursively to load-path: \"
+           ;;   default-directory)
+           ;; (normal-top-level-add-subdirs-to-load-path)
+           )))
 
      (let ((failure nil)
-           (byte-compile-warnings t)
+           (byte-compile-warnings t)  ; Strict mode
            (original-load-path (copy-sequence load-path)))
-       (push (expand-file-name \".\") original-load-path)
+
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
          (let* ((dir (file-name-directory file))
@@ -56,16 +72,20 @@ exec emacs --batch --eval \
                                          \".el\")))
            (unwind-protect
                (progn
+                 ;; Add the file's directory to load-path
+                 (message \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                          dir)
                  (push dir load-path)
 
                  (copy-file file tmpfile t)
                  (let ((default-directory dir))
                    (if (byte-compile-file tmpfile)
-                       (message \"[ELISP BYTE-COMPILE] Success: %s\" file)
+                       (message \"[ELISP CHECK-BYTE-COMPILE] Success: %s\" file)
                      (setq failure t)
-                     (message \"[ELISP BYTE-COMPILE] Failure: %s\" file))))
+                     (message \"[ELISP CHECK-BYTE-COMPILE] Failure: %s\" file))))
              (when (file-exists-p tmpfile)
-               (delete-file tmpfile))
+               (ignore-errors
+                 (delete-file tmpfile)))
              (let ((dest (funcall (if (bound-and-true-p
                                        byte-compile-dest-file-function)
                                       byte-compile-dest-file-function
@@ -73,7 +93,8 @@ exec emacs --batch --eval \
                                   tmpfile)))
                (when (and dest
                           (file-exists-p dest))
-                 (delete-file dest))))))
+                 (ignore-errors
+                   (delete-file dest)))))))
        (when failure
          (kill-emacs 1))))" \
   "$@"
