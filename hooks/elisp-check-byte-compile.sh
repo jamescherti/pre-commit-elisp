@@ -73,9 +73,10 @@ exec emacs --batch --eval \
            (unwind-protect
                (progn
                  ;; Add the file's directory to load-path
-                 (message \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
-                          dir)
-                 (push dir load-path)
+                 (when (not (member dir load-path))
+                   (message \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                            dir)
+                   (push dir load-path))
 
                  (copy-file file tmpfile t)
                  (let ((default-directory dir))
