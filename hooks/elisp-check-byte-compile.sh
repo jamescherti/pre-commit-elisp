@@ -42,27 +42,40 @@ exec emacs --batch --eval \
             \"Unable to determine the Git root directory of %s\"
             default-directory)
          (let ((default-directory (expand-file-name root)))
-           ;; Push the current directory to load path
-           (message \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
-                    default-directory)
-           (push default-directory load-path)
+           ;; Load .dir-locals.el
+           (put 'elisp-check-byte-compile-load-path 'safe-local-variable
+                (lambda (v) t))  ; accept any value
+           (hack-dir-local-variables-non-file-buffer)
 
            ;; Recursively add other directories (DISABLED)
            ;; TODO: Add an option for this
-           ;; (message
-           ;;   \"%s%s\"
-           ;;   \"[ELISP CHECK-BYTE-COMPILE] \"
-           ;;   \"Add recursively to load-path: \"
-           ;;   default-directory)
-           ;; (normal-top-level-add-subdirs-to-load-path)
-           )))
+           (unless (boundp 'elisp-check-byte-compile-load-path)
+             (setq elisp-check-byte-compile-load-path (list \".\")))
+
+           (when (bound-and-true-p elisp-check-byte-compile-load-path)
+             (dolist (dir elisp-check-byte-compile-load-path)
+               (let ((default-directory (file-name-as-directory
+                                         (expand-file-name dir))))
+                 ;; Push the current directory to load path
+                 (if (string-suffix-p \"/\" dir)
+                     (progn
+                       (message \"%s%s%s\"
+                                \"[ELISP CHECK-BYTE-COMPILE] \"
+                                \"Add recursively to load-path: \"
+                                default-directory)
+                       (normal-top-level-add-subdirs-to-load-path))
+                   (progn
+                     (message
+                       \"[ELISP CHECK-BYTE-COMPILE] Add to load-path: %s\"
+                       default-directory)
+                     (push default-directory load-path)))))))))
 
      (let ((failure nil)
            (byte-compile-warnings t)  ; Strict mode
            (original-load-path (copy-sequence load-path)))
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
-         (let* ((dir (file-name-directory file))
+         (let* ((dir (file-name-as-directory (file-name-directory file)))
                 (load-path (copy-sequence original-load-path))
                 (file-sans-ext (file-name-sans-extension
                                 (file-name-nondirectory file)))
@@ -83,7 +96,7 @@ exec emacs --batch --eval \
                        (message \"[ELISP CHECK-BYTE-COMPILE] Success: %s\" file)
                      (setq failure t)
                      (message
-                       \"[ELISP CHECK-BYTE-COMPILE] Failure: %s\" file))))
+                      \"[ELISP CHECK-BYTE-COMPILE] Failure: %s\" file))))
              (when (file-exists-p tmpfile)
                (ignore-errors
                  (delete-file tmpfile)))
