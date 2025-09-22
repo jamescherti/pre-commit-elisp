@@ -60,7 +60,6 @@ exec emacs --batch --eval \
      (let ((failure nil)
            (byte-compile-warnings t)  ; Strict mode
            (original-load-path (copy-sequence load-path)))
-
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
          (let* ((dir (file-name-directory file))
@@ -83,7 +82,8 @@ exec emacs --batch --eval \
                    (if (byte-compile-file tmpfile)
                        (message \"[ELISP CHECK-BYTE-COMPILE] Success: %s\" file)
                      (setq failure t)
-                     (message \"[ELISP CHECK-BYTE-COMPILE] Failure: %s\" file))))
+                     (message
+                       \"[ELISP CHECK-BYTE-COMPILE] Failure: %s\" file))))
              (when (file-exists-p tmpfile)
                (ignore-errors
                  (delete-file tmpfile)))

@@ -34,14 +34,16 @@
 exec emacs --batch --eval \
   "(with-temp-buffer
      (setq-local lexical-binding t)
-     (setq byte-compile-warnings t)
+     (push (expand-file-name \".\") load-path)
      (let ((failure nil)
+           (byte-compile-warnings t)  ; Strict mode
            (original-load-path (copy-sequence load-path)))
-       (push (expand-file-name \".\") original-load-path)
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
          (let ((dir (file-name-directory file))
                (load-path (copy-sequence original-load-path)))
+           (message \"[ELISP BYTE-COMPILE] Add to load-path: %s\"
+                    dir)
            (push dir load-path)
 
            (let ((default-directory dir))
