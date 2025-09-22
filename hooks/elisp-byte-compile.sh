@@ -34,9 +34,9 @@
 exec emacs --batch --eval \
   "(with-temp-buffer
      (setq-local lexical-binding t)
+     (setq byte-compile-warnings t)  ; Strict mode
      (push (expand-file-name \".\") load-path)
      (let ((failure nil)
-           (byte-compile-warnings t)  ; Strict mode
            (original-load-path (copy-sequence load-path)))
        (dolist (file command-line-args-left)
          (setq file (expand-file-name file))
