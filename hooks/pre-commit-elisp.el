@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025 James Cherti | https://www.jamescherti.com/contact/
 
 ;; Author: James Cherti
-;; Version: 1.0.4
+;; Version: 1.0.5
 ;; URL: https://github.com/jamescherti/pre-commit-elisp
 ;; Keywords: tools, convenience
 ;; Package-Requires: ((emacs "26.1"))

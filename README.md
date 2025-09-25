@@ -21,7 +21,7 @@ If this enhances your workflow, please show your support by **⭐ starring pre-c
 
 repos:
   - repo: https://github.com/jamescherti/pre-commit-elisp
-    rev: v1.0.4
+    rev: v1.0.5
     hooks:
       # Validate that all parentheses in .el files are correctly balanced
       - id: elisp-check-parens
