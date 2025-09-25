@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Test the class Util()."""
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -39,8 +40,13 @@ def test_check_byte_compile_error():
 
 def test_byte_compile_good():
     """Byte-compile a good Elisp file."""
+    elc_file = Path(str(GOOD) + "c")
+    if elc_file.exists():
+        os.unlink(elc_file)
+
     result = run_hook(ELISP_BYTE_COMPILE, GOOD)
     assert result.returncode == 0
+    assert elc_file.exists()  # elc file
 
 
 def test_byte_compile_error():
