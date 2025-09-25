@@ -34,13 +34,12 @@ from pre_commit_elisp import exec_elisp
 if __name__ == "__main__":
     exec_elisp("""
     (with-temp-buffer
-      (with-temp-buffer
-        (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
-          (if (and lib (file-exists-p lib))
-              (load-file lib)
-            (error
-             "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
-             )))
+      (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
+        (if (and lib (file-exists-p lib))
+            (load-file lib)
+          (error
+           "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
+           )))
 
-      (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
+    (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
     """)

@@ -128,6 +128,7 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
       (setq-local lexical-binding t)
       (insert-file-contents file)
       (emacs-lisp-mode)
+      (check-parens)
 
       ;; Remove tabs
       (goto-char (point-min))
