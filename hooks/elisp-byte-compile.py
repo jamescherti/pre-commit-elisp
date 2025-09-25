@@ -33,7 +33,7 @@ import sys
 from pre_commit_elisp import run_elisp
 
 
-def elisp_byte_compile(self):
+def elisp_byte_compile():
     return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))

@@ -29,7 +29,7 @@ import sys
 from pre_commit_elisp import run_elisp
 
 
-def elisp_check_parens(self):
+def elisp_check_parens():
     return run_elisp("""
     (dolist (file command-line-args-left)
       (message "[ELISP CHECK-PARENS] %s" file)

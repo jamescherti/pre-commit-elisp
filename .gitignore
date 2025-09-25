@@ -1,0 +1,5 @@
+flycheck_*
+flymake_*
+*.elc
+*.pyc
+*/__pycache__

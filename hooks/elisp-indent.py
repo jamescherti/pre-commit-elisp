@@ -29,7 +29,7 @@ import sys
 from pre_commit_elisp import run_elisp
 
 
-def elisp_indent(self):
+def elisp_indent():
     return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
