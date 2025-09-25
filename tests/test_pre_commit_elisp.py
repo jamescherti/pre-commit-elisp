@@ -63,5 +63,6 @@ def test_check_parens_check_parens_error():
 
 def test_indent_good():
     """Run indent hook on a good file."""
+    # TODO: Check the content of the file after indenting it
     result = run_hook(ELISP_INDENT, GOOD)
     assert result.returncode == 0
