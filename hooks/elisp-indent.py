@@ -1,14 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 #
 # Author: James Cherti
 # URL: https://github.com/jamescherti/pre-commit-elisp
-#
-# Description:
-# ------------
-# This script byte-compiles the Emacs Lisp files provided as arguments into
-# temporary files. All generated temporary files, including the compiled .elc
-# files, are automatically deleted after compilation to ensure no residual
-# artifacts remain.
 #
 # License:
 # --------
@@ -29,19 +22,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+"""Indent Elisp files according to Emacs Lisp style conventions."""
 
-# shellcheck disable=SC2155
-export PRE_COMMIT_ELISP_LIB="$(dirname "${BASH_SOURCE[0]}")/pre-commit-elisp.el"
+from pre_commit_elisp import exec_elisp
 
-exec emacs --batch --eval \
-  "(with-temp-buffer
-     (let ((lib (getenv \"PRE_COMMIT_ELISP_LIB\")))
-       (if (and lib (file-exists-p lib))
-           (load-file lib)
-         (error
-           \"PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file.\"
-         )))
+if __name__ == "__main__":
+    exec_elisp("""
+    (with-temp-buffer
+      (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
+        (if (and lib (file-exists-p lib))
+            (load-file lib)
+          (error
+           "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
+           )))
 
-     ;; Add the root directory of the Git repository to load-path
-     (pre-commit-elisp-byte-compile \"[ELISP CHECK-BYTE-COMPILE] \" t))" \
-  "$@"
+      (pre-commit-elisp-indent))
+    """)

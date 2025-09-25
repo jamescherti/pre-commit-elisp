@@ -1,11 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 #
 # Author: James Cherti
 # URL: https://github.com/jamescherti/pre-commit-elisp
-#
-# Description:
-# ------------
-# Indent Elisp files according to Emacs Lisp style conventions.
 #
 # License:
 # --------
@@ -26,11 +22,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+"""Indent Elisp files according to Emacs Lisp style conventions."""
 
-exec emacs --batch --eval '(dolist (file command-line-args-left)
-                             (message "[ELISP CHECK-PARENS] %s" file)
-                             (with-temp-buffer
-                               (setq-local lexical-binding t)
-                               (emacs-lisp-mode)
-                               (insert-file-contents file)
-                               (check-parens)))' "$@"
+from pre_commit_elisp import exec_elisp
+
+if __name__ == "__main__":
+    exec_elisp("""
+    (dolist (file command-line-args-left)
+      (message "[ELISP CHECK-PARENS] %s" file)
+      (with-temp-buffer
+        (setq-local lexical-binding t)
+        (emacs-lisp-mode)
+        (insert-file-contents file)
+        (check-parens)))
+    """)

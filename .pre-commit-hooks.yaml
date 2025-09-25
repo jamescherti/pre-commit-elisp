@@ -2,24 +2,24 @@
 
 - id: elisp-check-parens
   name: elisp-check-parens
-  entry: hooks/elisp-check-parens.sh
+  entry: hooks/elisp-check-parens.py
   language: script
   files: \.el$
 
 - id: elisp-check-byte-compile
   name: elisp-check-byte-compile
-  entry: hooks/elisp-check-byte-compile.sh
+  entry: hooks/elisp-check-byte-compile.py
   language: script
   files: \.el$
 
 - id: elisp-byte-compile
   name: elisp-byte-compile
-  entry: hooks/elisp-byte-compile.sh
+  entry: hooks/elisp-byte-compile.py
   language: script
   files: \.el$
 
 - id: elisp-indent
   name: elisp-indent
-  entry: hooks/elisp-indent.sh
+  entry: hooks/elisp-indent.py
   language: script
   files: \.el$

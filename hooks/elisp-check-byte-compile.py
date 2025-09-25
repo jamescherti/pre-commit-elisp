@@ -1,15 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 #
 # Author: James Cherti
 # URL: https://github.com/jamescherti/pre-commit-elisp
-#
-# Description:
-# ------------
-# Byte-compile Elisp files to detect compilation errors.
-#
-# Alternative approach: To prevent .elc files from appearing in the repository,
-# use `elisp-check-byte-compile` instead of `elisp-byte-compile`. It performs
-# compilation checks entirely in temporary files.
 #
 # License:
 # --------
@@ -30,20 +22,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+"""
+This script byte-compiles the Emacs Lisp files provided as arguments into
+temporary files. All generated temporary files, including the compiled .elc
+files, are automatically deleted after compilation to ensure no residual
+artifacts remain.
+"""
 
-# shellcheck disable=SC2155
-export PRE_COMMIT_ELISP_LIB="$(dirname "${BASH_SOURCE[0]}")/pre-commit-elisp.el"
+from pre_commit_elisp import exec_elisp
 
-exec emacs --batch --eval \
-  "(with-temp-buffer
-     (setq-local lexical-binding t)
+if __name__ == "__main__":
+    exec_elisp("""
+    (with-temp-buffer
+      (with-temp-buffer
+        (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
+          (if (and lib (file-exists-p lib))
+              (load-file lib)
+            (error
+             "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
+             )))
 
-     (let ((lib (getenv \"PRE_COMMIT_ELISP_LIB\")))
-       (if (and lib (file-exists-p lib))
-           (load-file lib)
-         (error
-          \"PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file.\"
-         )))
-
-     (pre-commit-elisp-byte-compile \"[ELISP BYTE-COMPILE] \" nil))" \
-  "$@"
+      (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
+    """)

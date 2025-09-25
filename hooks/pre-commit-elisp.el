@@ -29,7 +29,6 @@
 
 ;;; Require
 
-
 (defun pre-commit-elisp-byte-compile (prefix use-tmp-files)
   "Byte-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
@@ -111,6 +110,49 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                   (delete-file dest))))))))
     (when failure
       (kill-emacs 1))))
+
+(defun pre-commit-elisp-indent ()
+  "Indent the Elisp files passed as command-line arguments."
+  (dolist (file command-line-args-left)
+    (message "[ELISP INDENT] %s" file)
+    (with-temp-buffer
+      (put 'cl-letf 'lisp-indent-function 1)
+      (put 'lightemacs-use-package 'lisp-indent-function 0)
+      (put 'lightemacs-define-keybindings 'lisp-indent-function 1)
+      (put 'lightemacs-verbose-message 'lisp-indent-function 0)
+      (put 'lightemacs-save-window-hscroll 'lisp-indent-function 0)
+      (put 'lightemacs-define-mode-add-hook-to 'lisp-indent-function 0)
+      (put 'lightemacs-save-window-start 'lisp-indent-function 0)
+
+      ;; Modify settings
+      (setq-local lexical-binding t)
+      (insert-file-contents file)
+      (emacs-lisp-mode)
+
+      ;; Remove tabs
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let ((line-beg (line-beginning-position)))
+          (goto-char line-beg)
+          (skip-chars-forward " \t")
+          (let ((indent-end (point)))
+            (when (> indent-end line-beg)
+              (untabify line-beg indent-end))))
+        (forward-line 1))
+
+      ;; Reindent
+      (let ((beg (point-min))
+            (end (point-max)))
+        (save-restriction
+          (narrow-to-region beg end)
+          (if (save-excursion
+                (goto-char beg)
+                (= end (line-beginning-position 2)))
+              (indent-according-to-mode)
+            (goto-char beg)
+            (indent-region beg end))))
+
+      (write-region (point-min) (point-max) file))))
 
 (provide 'pre-commit-elisp)
 
