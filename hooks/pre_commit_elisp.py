@@ -14,7 +14,7 @@ ENV = os.environ.copy()
 ENV["PRE_COMMIT_ELISP_LIB"] = PRE_COMMIT_ELISP_LIB
 
 
-def exec_elisp(elisp_code: str):
+def run_elisp(elisp_code: str):
     """Run the elisp_code Elisp code."""
 
     pre_commit_elisp_lib = ENV["PRE_COMMIT_ELISP_LIB"]
@@ -35,4 +35,4 @@ def exec_elisp(elisp_code: str):
         returncode = err.returncode
         print(f"Error: {err}", file=sys.stderr)
 
-    sys.exit(returncode)
+    return returncode

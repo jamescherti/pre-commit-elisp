@@ -29,10 +29,13 @@ files, are automatically deleted after compilation to ensure no residual
 artifacts remain.
 """
 
-from pre_commit_elisp import exec_elisp
+import sys
 
-if __name__ == "__main__":
-    exec_elisp("""
+from pre_commit_elisp import run_elisp
+
+
+def elisp_check_byte_compile(self):
+    return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
         (if (and lib (file-exists-p lib))
@@ -43,3 +46,8 @@ if __name__ == "__main__":
 
     (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
     """)
+
+
+if __name__ == "__main__":
+    ERRNO = elisp_check_byte_compile()
+    sys.exit(ERRNO)

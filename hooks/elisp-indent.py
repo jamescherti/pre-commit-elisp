@@ -24,10 +24,13 @@
 #
 """Indent Elisp files according to Emacs Lisp style conventions."""
 
-from pre_commit_elisp import exec_elisp
+import sys
 
-if __name__ == "__main__":
-    exec_elisp("""
+from pre_commit_elisp import run_elisp
+
+
+def elisp_indent(self):
+    return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
         (if (and lib (file-exists-p lib))
@@ -38,3 +41,8 @@ if __name__ == "__main__":
 
       (pre-commit-elisp-indent))
     """)
+
+
+if __name__ == "__main__":
+    ERRNO = elisp_indent()
+    sys.exit(ERRNO)

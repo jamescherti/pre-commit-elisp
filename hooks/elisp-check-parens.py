@@ -24,10 +24,13 @@
 #
 """Indent Elisp files according to Emacs Lisp style conventions."""
 
-from pre_commit_elisp import exec_elisp
+import sys
 
-if __name__ == "__main__":
-    exec_elisp("""
+from pre_commit_elisp import run_elisp
+
+
+def elisp_check_parens(self):
+    return run_elisp("""
     (dolist (file command-line-args-left)
       (message "[ELISP CHECK-PARENS] %s" file)
       (with-temp-buffer
@@ -36,3 +39,8 @@ if __name__ == "__main__":
         (insert-file-contents file)
         (check-parens)))
     """)
+
+
+if __name__ == "__main__":
+    ERRNO = elisp_check_parens()
+    sys.exit(ERRNO)
