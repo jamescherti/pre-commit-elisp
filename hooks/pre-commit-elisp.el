@@ -47,7 +47,8 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
 
         ;; Recursively add other directories (DISABLED)
         (let ((pre-commit-elisp-load-path
-               (unless (boundp 'pre-commit-elisp-load-path)
+               (if (boundp 'pre-commit-elisp-load-path)
+                   pre-commit-elisp-load-path
                  (list "."))))
           (dolist (dir pre-commit-elisp-load-path)
             (let ((default-directory (file-name-as-directory
