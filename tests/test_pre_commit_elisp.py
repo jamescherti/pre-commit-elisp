@@ -3,6 +3,7 @@
 
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ import pytest
 TEST_FILES_DIRECTORY = Path("./tests/files")
 FAILURE_FILE = TEST_FILES_DIRECTORY / "check_parens_error.el"
 SUCCESS_FILE = TEST_FILES_DIRECTORY / "good.el"
+SUCCESS_FILE_INDENTED = TEST_FILES_DIRECTORY / "good_indented.el"
 
 SCRIPT_BYTE_COMPILE = Path("hooks/elisp-byte-compile.py")
 SCRIPT_CHECK_BYTE_COMPILE = Path("hooks/elisp-check-byte-compile.py")
@@ -41,6 +43,7 @@ def test_check_byte_compile_failure():
     result = run_hook(SCRIPT_CHECK_BYTE_COMPILE, FAILURE_FILE)
     assert result.returncode != 0
 
+
 # -----------------------------------------------------------------------------
 # BYTE COMPILE
 # -----------------------------------------------------------------------------
@@ -67,6 +70,7 @@ def test_byte_compile_failure():
 # BYTE COMPILE
 # -----------------------------------------------------------------------------
 
+
 def test_check_parens_success():
     """Check parentheses on a correct file."""
     result = run_hook(SCRIPT_CHECK_PARENS, SUCCESS_FILE)
@@ -85,7 +89,20 @@ def test_check_parens_failure():
 
 
 def test_indent():
-    """Run indent hook on a good file."""
-    # TODO: Check the content of the file after indenting it
-    result = run_hook(SCRIPT_INDENT, SUCCESS_FILE)
-    assert result.returncode == 0
+    """Run indent hook and verify indentation changed the content."""
+    original_content = SUCCESS_FILE.read_text(encoding="utf-8")
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".el") as tmp:
+        tmp_path = Path(tmp.name)
+        tmp.write(original_content.encode("utf-8"))
+
+    try:
+        result = run_hook(SCRIPT_INDENT, tmp_path)
+        assert result.returncode == 0
+
+        expected_content = SUCCESS_FILE_INDENTED.read_text(encoding="utf-8")
+        new_content = tmp_path.read_text(encoding="utf-8")
+
+        assert expected_content == new_content
+    finally:
+        tmp_path.unlink(missing_ok=True)

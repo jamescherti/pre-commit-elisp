@@ -6,8 +6,8 @@
 ;;; Code:
 
 (defun name ()
-"Docstring."
-(setq v 1))
+  "Docstring."
+  (setq v 1))
 
 (provide 'good)
 ;;; good.el ends here
