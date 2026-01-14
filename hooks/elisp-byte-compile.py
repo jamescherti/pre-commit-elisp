@@ -5,7 +5,7 @@
 #
 # License:
 # --------
-# Copyright (C) 2025 James Cherti
+# Copyright (C) 2025-2026 James Cherti
 #
 # Distributed under terms of the GNU General Public License version 3.
 #
