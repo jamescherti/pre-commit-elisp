@@ -27,13 +27,25 @@
 
 ;;; Code:
 
-;;; Require
-
-(defun pre-commit-elisp-byte-compile (prefix use-tmp-files)
-  "Byte-compile the files passed as arguments.
+(defun pre-commit-elisp--compile (prefix use-tmp-files compile-type)
+  "Internal function to compile files using COMPILE-TYPE (\='byte or \='native).
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
-  (require 'bytecomp)
+  (cond
+
+   ((eq compile-type 'native)
+    (progn
+      (require 'comp nil t)
+      (unless (and (fboundp 'native-comp-available-p)
+                   (native-comp-available-p))
+        (error "Native compilation is not available"))))
+
+   ((eq compile-type 'byte)
+    (require 'bytecomp))
+
+   (t
+    (error "pre-commit-elisp--compile: `compile-type' has to be 'byte or 'native")))
+
   (let ((root (vc-call-backend 'Git 'root default-directory)))
     (if (not root)
         (error
@@ -75,9 +87,17 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
              (file-sans-ext (file-name-sans-extension
                              (file-name-nondirectory file)))
              (tmpfile (when use-tmp-files
-                        (make-temp-file (concat file-sans-ext "-")
-                                        nil
-                                        ".el"))))
+                        (cond
+                         ((eq compile-type 'native)
+                          (make-temp-file (concat file-sans-ext "-")
+                                          nil
+                                          ".eln"))
+
+                         ((eq compile-type 'byte)
+                          (make-temp-file (concat file-sans-ext "-")
+                                          nil
+                                          ".el")))))
+             (compiled-dest nil))
         (unwind-protect
             (progn
               ;; Add the file's directory to load-path
@@ -85,32 +105,61 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                 (message "%sAdd to load-path: %s" prefix dir)
                 (push dir load-path))
 
-              (when tmpfile
+              (when (and tmpfile
+                         (eq compile-type 'byte))
                 (copy-file file tmpfile t))
 
               (let ((default-directory dir))
-                (if (byte-compile-file (if tmpfile
-                                           tmpfile
-                                         file))
-                    (message "%sSuccess: %s" prefix file)
-                  (setq failure t)
-                  (message
-                   "%sFailure: %s" prefix file))))
+                (if (eq compile-type 'byte)
+                    (if (byte-compile-file (if tmpfile tmpfile file))
+                        (message "%sSuccess: %s" prefix file)
+                      (setq failure t)
+                      (message "%sFailure: %s" prefix file))
+                  (condition-case nil
+                      (progn
+                        (if (fboundp 'native-compile)
+                            (setq compiled-dest
+                                  (native-compile file (if tmpfile tmpfile nil)))
+                          (error "Undefined function: native-compile"))
+
+                        (if compiled-dest
+                            (message "%sSuccess: %s" prefix file)
+                          (setq failure t)
+                          (message "%sFailure: %s" prefix file)))
+                    (error
+                     (setq failure t)
+                     (message "%sFailure: %s" prefix file))))))
           (when tmpfile
             (when (file-exists-p tmpfile)
               (ignore-errors
                 (delete-file tmpfile)))
-            (let ((dest (funcall (if (bound-and-true-p
-                                      byte-compile-dest-file-function)
-                                     byte-compile-dest-file-function
-                                   #'byte-compile-dest-file)
-                                 tmpfile)))
-              (when (and dest
-                         (file-exists-p dest))
+            (if (eq compile-type 'byte)
+                (let ((dest (funcall (if (bound-and-true-p
+                                          byte-compile-dest-file-function)
+                                         byte-compile-dest-file-function
+                                       #'byte-compile-dest-file)
+                                     tmpfile)))
+                  (when (and dest
+                             (file-exists-p dest))
+                    (ignore-errors
+                      (delete-file dest))))
+              (when (and compiled-dest (file-exists-p compiled-dest))
                 (ignore-errors
-                  (delete-file dest))))))))
+                  (delete-file compiled-dest))))))))
     (when failure
       (kill-emacs 1))))
+
+(defun pre-commit-elisp-byte-compile (prefix use-tmp-files)
+  "Byte-compile the files passed as arguments.
+PREFIX is the prefix used for displaying messages.
+USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (pre-commit-elisp--compile prefix use-tmp-files 'byte))
+
+(defun pre-commit-elisp-native-compile (prefix use-tmp-files)
+  "Native-compile the files passed as arguments.
+PREFIX is the prefix used for displaying messages.
+USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (pre-commit-elisp--compile prefix use-tmp-files 'native))
 
 (defun pre-commit-elisp-indent ()
   "Indent the Elisp files passed as command-line arguments."

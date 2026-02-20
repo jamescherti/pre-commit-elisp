@@ -22,25 +22,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Indent Elisp files according to Emacs Lisp style conventions."""
+"""Native-compile Elisp files to detect compilation errors.
+
+Alternative approach: To prevent .elc files from appearing in the repository,
+use elisp-check-native-compile instead of elisp-native-compile. It performs
+compilation checks entirely in temporary files."""
 
 import sys
 
 from pre_commit_elisp import run_elisp
 
 
-def elisp_check_parens() -> int:
+def elisp_native_compile() -> int:
     return run_elisp("""
-    (dolist (file command-line-args-left)
-      (message "[ELISP CHECK-PARENS] %s" file)
-      (with-temp-buffer
-        (setq-local lexical-binding t)
-        (emacs-lisp-mode)
-        (insert-file-contents file)
-        (check-parens)))
+    (with-temp-buffer
+      (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
+        (if (and lib (file-exists-p lib))
+            (load lib nil nil t)
+          (error
+           "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
+           )))
+
+      (pre-commit-elisp-native-compile "[ELISP NATIVE-COMPILE] " nil))
     """)
 
 
 if __name__ == "__main__":
-    ERRNO = elisp_check_parens()
+    ERRNO = elisp_native_compile()
     sys.exit(ERRNO)

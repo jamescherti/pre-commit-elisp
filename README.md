@@ -4,6 +4,7 @@ The [pre-commit-elisp](https://github.com/jamescherti/pre-commit-elisp) reposito
 
 * **`elisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
 * **`elisp-check-byte-compile`**: Byte-compile Elisp files to detect compilation errors.
+* **`elisp-check-native-compile`**: Native-compile Elisp files to detect compilation errors.
 * **`elisp-indent`**: Indent Elisp files according to Emacs Lisp style conventions.
 
 These pre-commit hooks enforce syntactic correctness, successful byte-compilation, and consistent code formatting, ensuring a high standard of code quality and maintainability throughout the repository.
@@ -29,6 +30,9 @@ repos:
       # Optional: Byte-compile .el files to identify compilation errors early
       # - id: elisp-check-byte-compile
 
+      # Optional: Byte-compile .el files to identify compilation errors early
+      # - id: elisp-check-byte-compile
+
       # Optional: Indent Elisp files according to Emacs Lisp style conventions
       # - id: elisp-indent
 ```
@@ -49,9 +53,9 @@ pre-commit run --all-files
 
 #### Customizing load-path
 
-Scripts such as `elisp-check-byte-compile` and `elisp-byte-compile` support customizing the `load-path` variable using a `.dir-locals.el` variable `pre-commit-elisp-load-path`. This variable allows specifying the directories that should be included in the `load-path` without modifying the scripts themselves, ensuring that dependencies and libraries located in the project or its subdirectories are correctly available for byte-compilation.
+Scripts such as `elisp-check-byte-compile`, `elisp-byte-compile`, `elisp-check-native-compile`, `elisp-native-compile` support customizing the `load-path` variable using a `.dir-locals.el` variable `pre-commit-elisp-load-path`. This variable allows specifying the directories that should be included in the `load-path` without modifying the scripts themselves, ensuring that dependencies and libraries located in the project or its subdirectories are correctly available for byte-compilation.
 
-Customizing the `load-path` allows the byte-compilation scripts, such as `elisp-check-byte-compile`, to **find and load project-specific Emacs Lisp files** during compilation.
+Customizing the `load-path` allows the byte-compilation and native-compilation scripts, such as `elisp-check-byte-compile`, to **find and load project-specific Emacs Lisp files** during compilation.
 
 Here is an example of a `.dir-locals.el` file to place at the root of the Git repository:
 

@@ -29,12 +29,12 @@ import sys
 from pre_commit_elisp import run_elisp
 
 
-def elisp_indent():
+def elisp_indent() -> int:
     return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
         (if (and lib (file-exists-p lib))
-            (load-file lib)
+            (load lib nil nil t)
           (error
            "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
            )))

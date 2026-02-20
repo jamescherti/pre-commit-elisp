@@ -14,12 +14,12 @@ ENV = os.environ.copy()
 ENV["PRE_COMMIT_ELISP_LIB"] = PRE_COMMIT_ELISP_LIB
 
 
-def run_elisp(elisp_code: str):
+def run_elisp(elisp_code: str) -> int:
     """Run the elisp_code Elisp code."""
 
     pre_commit_elisp_lib = ENV["PRE_COMMIT_ELISP_LIB"]
     if not os.path.exists(pre_commit_elisp_lib):
-        print(f"Error: PRE_COMMIT_ELISP_LIB environment variable is not set "
+        print("Error: PRE_COMMIT_ELISP_LIB environment variable is not set "
               "or points to a non-existent file.", file=sys.stderr)
         sys.exit(1)
 
@@ -35,4 +35,4 @@ def run_elisp(elisp_code: str):
         returncode = err.returncode
         print(f"Error: {err}", file=sys.stderr)
 
-    return returncode
+    return int(returncode)

@@ -34,17 +34,22 @@ import sys
 from pre_commit_elisp import run_elisp
 
 
-def elisp_check_byte_compile():
+def elisp_check_byte_compile() -> int:
+    """Execute byte compilation for Emacs Lisp files.
+
+    :return: The exit status from the byte compilation process.
+    :rtype: int
+    """
     return run_elisp("""
     (with-temp-buffer
       (let ((lib (getenv "PRE_COMMIT_ELISP_LIB")))
         (if (and lib (file-exists-p lib))
-            (load-file lib)
+            (load lib nil nil t t)
           (error
            "PRE_COMMIT_ELISP_LIB is not set or points to a non-existent file."
            )))
 
-    (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
+      (pre-commit-elisp-byte-compile "[ELISP CHECK-BYTE-COMPILE] " t))
     """)
 
 

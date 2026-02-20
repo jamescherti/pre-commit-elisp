@@ -18,6 +18,18 @@
   language: script
   files: \.el$
 
+- id: elisp-check-native-compile
+  name: elisp-check-native-compile
+  entry: hooks/elisp-check-native-compile.py
+  language: script
+  files: \.el$
+
+- id: elisp-native-compile
+  name: elisp-native-compile
+  entry: hooks/elisp-native-compile.py
+  language: script
+  files: \.el$
+
 - id: elisp-indent
   name: elisp-indent
   entry: hooks/elisp-indent.py
