@@ -159,6 +159,12 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   "Native-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (setq native-comp-async-report-warnings-errors t)
+  (setq native-comp-warning-on-missing-source t)
+  (setq native-comp-verbose 0)
+  (setq native-comp-debug 0)
+  (setq native-comp-deferred-compilation nil)
+  (setq native-comp-jit-compilation nil)
   (pre-commit-elisp--compile prefix use-tmp-files 'native))
 
 (defun pre-commit-elisp-indent ()
@@ -206,5 +212,9 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
       (write-region (point-min) (point-max) file))))
 
 (provide 'pre-commit-elisp)
+
+;; Local variables:
+;; byte-compile-warnings: (not obsolete free-vars)
+;; End:
 
 ;;; pre-commit-elisp.el ends here
