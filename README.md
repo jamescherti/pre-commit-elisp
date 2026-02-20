@@ -28,7 +28,7 @@ repos:
       - id: elisp-check-parens
 
       # Optional: Byte-compile .el files to identify compilation errors early
-      # - id: elisp-check-byte-compile
+      - id: elisp-check-byte-compile
 
       # Optional: Native-compile .el files to identify compilation errors early
       # - id: elisp-check-native-compile
