@@ -27,7 +27,7 @@ repos:
       # Validate that all parentheses in .el files are correctly balanced
       - id: elisp-check-parens
 
-      # Optional: Byte-compile .el files to identify compilation errors early
+      # Byte-compile .el files to identify compilation errors early
       - id: elisp-check-byte-compile
 
       # Optional: Native-compile .el files to identify compilation errors early
