@@ -46,7 +46,8 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
    (t
     (error "pre-commit-elisp--compile: `compile-type' has to be 'byte or 'native")))
 
-  (let ((root (vc-call-backend 'Git 'root default-directory)))
+  (let ((root (vc-call-backend 'Git 'root default-directory))
+        (byte-compile-error-on-warn t))
     (if (not root)
         (error
          "Unable to determine the Git root directory of %s"
@@ -157,14 +158,12 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   "Byte-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
-  (setq byte-compile-error-on-warn t)
   (pre-commit-elisp--compile prefix use-tmp-files 'byte))
 
 (defun pre-commit-elisp-native-compile (prefix use-tmp-files)
   "Native-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
-  (setq byte-compile-error-on-warn t)
   (setq native-comp-deferred-compilation nil)
   (setq native-comp-jit-compilation nil)
   (pre-commit-elisp--compile prefix use-tmp-files 'native))
