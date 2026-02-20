@@ -119,7 +119,11 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                       (progn
                         (if (fboundp 'native-compile)
                             (setq compiled-dest
-                                  (native-compile file (if tmpfile tmpfile nil)))
+                                  (if (native-compile file
+                                                      (if tmpfile tmpfile nil))
+                                      (message "%sSuccess: %s" prefix file)
+                                    (setq failure t)
+                                    (message "%sFailure: %s" prefix file)))
                           (error "Undefined function: native-compile"))
 
                         (if compiled-dest
