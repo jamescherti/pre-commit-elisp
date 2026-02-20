@@ -157,16 +157,14 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   "Byte-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (setq byte-compile-error-on-warn t)
   (pre-commit-elisp--compile prefix use-tmp-files 'byte))
 
 (defun pre-commit-elisp-native-compile (prefix use-tmp-files)
   "Native-compile the files passed as arguments.
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
-  (setq native-comp-async-report-warnings-errors t)
-  (setq native-comp-warning-on-missing-source t)
-  (setq native-comp-verbose 0)
-  (setq native-comp-debug 0)
+  (setq byte-compile-error-on-warn t)
   (setq native-comp-deferred-compilation nil)
   (setq native-comp-jit-compilation nil)
   (pre-commit-elisp--compile prefix use-tmp-files 'native))
