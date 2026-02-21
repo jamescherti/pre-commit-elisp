@@ -77,7 +77,6 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                   (push default-directory load-path)))))))))
 
   (let ((failure nil)
-        (byte-compile-error-on-warn t)
         (byte-compile-warnings t)  ; Strict mode
         (original-load-path (copy-sequence load-path)))
     (dolist (file command-line-args-left)
