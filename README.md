@@ -60,7 +60,12 @@ Customizing the `load-path` allows the byte-compilation and native-compilation s
 Here is an example of a `.dir-locals.el` file to place at the root of the Git repository:
 
 ```elisp
-((nil . ((pre-commit-elisp-load-path . ("." "lib/" "utils")))))
+;; pre-commit .dir-locals.el
+((nil . ((pre-commit-elisp-load-path . ("."
+                                        "lib/"
+                                        "tools/utils/"))
+         ;; This makes the byte-compiler report warnings with as errors
+         (byte-compile-error-on-warn . t))))
 ```
 
 The `pre-commit-elisp-load-path` list is a **list of directories** relative to the Git repository root or project directory.

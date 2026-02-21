@@ -48,16 +48,15 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
 
   (let ((root (vc-call-backend 'Git 'root default-directory)))
     (if (not root)
-        (error
-         "Unable to determine the Git root directory of %s"
-         default-directory)
+        (error "Unable to determine the Git root directory of %s"
+               default-directory)
       (let ((default-directory (expand-file-name root)))
         ;; Load .dir-locals.el
         (put 'pre-commit-elisp-load-path 'safe-local-variable
              (lambda (_v) t))  ; accept any value
         (hack-dir-local-variables-non-file-buffer)
 
-        ;; Recursively add other directories (DISABLED)
+        ;; Recursively add other directories
         (let ((pre-commit-elisp-load-path
                (if (boundp 'pre-commit-elisp-load-path)
                    pre-commit-elisp-load-path
@@ -78,7 +77,6 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                   (push default-directory load-path)))))))))
 
   (let ((failure nil)
-        (byte-compile-error-on-warn t)
         (byte-compile-warnings t)  ; Strict mode
         (original-load-path (copy-sequence load-path)))
     (dolist (file command-line-args-left)
