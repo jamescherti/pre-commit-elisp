@@ -46,7 +46,6 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   (setq pre-commit-elisp-load-path nil)
   (setq w32-disable-abort-dialog t)
   (setq load-prefer-newer t)
-  (setq use-package-always-ensure nil)
 
   (cond
    ((eq compile-type 'native)
