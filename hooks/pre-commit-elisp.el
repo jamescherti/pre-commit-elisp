@@ -183,11 +183,10 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                             pre-commit-elisp-error-on-compile-warning)))
                       (condition-case err
                           (setq failure
-                                (progn
-                                  (let ((result (byte-compile-file el-file)))
-                                    (if (eq result 'no-byte-compile)
-                                        nil
-                                      (not result)))))
+                                (let ((result (byte-compile-file el-file)))
+                                  (if (eq result 'no-byte-compile)
+                                      nil
+                                    (not result))))
                         (error
                          (message "%s" (error-message-string err))
                          (setq failure t)
