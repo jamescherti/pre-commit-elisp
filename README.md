@@ -29,9 +29,11 @@ repos:
 
       # Byte-compile .el files to identify compilation errors early
       - id: elisp-check-byte-compile
+        exclude: \.dir-locals\.el$
 
       # Optional: Native-compile .el files to identify compilation errors early
       # - id: elisp-check-native-compile
+      #   exclude: \.dir-locals\.el$
 
       # Optional: Indent Elisp files according to Emacs Lisp style conventions
       # - id: elisp-indent
