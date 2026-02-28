@@ -27,7 +27,7 @@
 
 ;;; Code:
 
-(defvar pre-commit-elisp-debug nil)
+(defvar pre-commit-elisp-debug t)
 
 (defvar pre-commit-elisp-error-on-compile-warning nil)
 (defvar pre-commit-elisp-load-path nil)
@@ -89,7 +89,6 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                     (set-default var val)
 
                     (cond
-
                      ((and (eq var 'pre-commit-elisp-load-path)
                            (not (listp pre-commit-elisp-load-path)))
                       (message
@@ -194,7 +193,19 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
 
                     (if failure
                         (message "%sFailure: %s" prefix file)
-                      (message "%sSuccess: %s" prefix file)))
+                      (message "%sSuccess: %s" prefix file))
+
+                    (when delete-tmpfile
+                      (let ((dest (funcall (if (bound-and-true-p
+                                                byte-compile-dest-file-function)
+                                               byte-compile-dest-file-function
+                                             #'byte-compile-dest-file)
+                                           el-file)))
+                        (when (and dest (file-exists-p dest))
+                          (when pre-commit-elisp-debug
+                            (message "[DEBUG] Delete: %s" dest))
+                          (ignore-errors
+                            (delete-file dest))))))
                 ;; Unwind protect
                 (when delete-tmpfile
                   (when pre-commit-elisp-debug
