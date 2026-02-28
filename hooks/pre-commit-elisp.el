@@ -42,6 +42,8 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   "Internal function to compile files using COMPILE-TYPE (\='byte or \='native).
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (setq pre-commit-elisp-error-on-compile-warning nil)
+  (setq pre-commit-elisp-load-path nil)
   (setq w32-disable-abort-dialog t)
   (setq load-prefer-newer t)
   (setq use-package-always-ensure nil)
