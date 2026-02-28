@@ -65,7 +65,7 @@ Here is an example of a `.dir-locals.el` file to place at the root of the Git re
                                         "lib/"
                                         "tools/utils/"))
          ;; This makes the byte-compiler report warnings with as errors
-         (byte-compile-error-on-warn . t))))
+         (pre-commit-elisp-error-on-compile-warning . t))))
 ```
 
 The `pre-commit-elisp-load-path` list is a **list of directories** relative to the Git repository root or project directory.

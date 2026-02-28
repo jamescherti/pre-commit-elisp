@@ -27,12 +27,22 @@
 
 ;;; Code:
 
+(defvar pre-commit-elisp-debug nil)
+
+(defvar pre-commit-elisp-error-on-compile-warning nil)
+(defvar pre-commit-elisp-load-path nil)
+
+(defun pre-commit-elisp-byte-compile (prefix use-tmp-files)
+  "Byte-compile the files passed as arguments.
+PREFIX is the prefix used for displaying messages.
+USE-TMP-FILES compile in temporary files instead in the elisp file directory."
+  (pre-commit-elisp--compile prefix use-tmp-files 'byte))
+
 (defun pre-commit-elisp--compile (prefix use-tmp-files compile-type)
   "Internal function to compile files using COMPILE-TYPE (\='byte or \='native).
 PREFIX is the prefix used for displaying messages.
 USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   (cond
-
    ((eq compile-type 'native)
     (progn
       (require 'comp nil t)
@@ -50,11 +60,59 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
     (if (not root)
         (error "Unable to determine the Git root directory of %s"
                default-directory)
+      (when pre-commit-elisp-debug
+        (message "[DEBUG] Root directory: %s" root))
       (let ((default-directory (expand-file-name root)))
         ;; Load .dir-locals.el
-        (put 'pre-commit-elisp-load-path 'safe-local-variable
-             (lambda (_v) t))  ; accept any value
-        (hack-dir-local-variables-non-file-buffer)
+        ;; (setq enable-local-variables :safe)
+
+        (put 'pre-commit-elisp-error-on-compile-warning 'safe-local-variable #'booleanp)
+        (put 'pre-commit-elisp-load-path 'safe-local-variable #'listp)
+        (with-temp-buffer
+          (let ((enable-local-variables :safe))
+            (hack-dir-local-variables-non-file-buffer))
+
+          ;; Manually apply the alist to the global state
+          (when pre-commit-elisp-debug
+            (message "[DEBUG] file-local-variables-alist: %S"
+                     file-local-variables-alist))
+          (dolist (entry file-local-variables-alist)
+            (let ((var (car entry))
+                  (val (cdr entry)))
+              (if (memq var '(pre-commit-elisp-error-on-compile-warning
+                              pre-commit-elisp-load-path))
+                  (progn
+                    (set-default var val)
+
+                    (cond
+
+                     ((and (eq var 'pre-commit-elisp-load-path)
+                           (not (listp pre-commit-elisp-load-path)))
+                      (message
+                       "Error: The pre-commit-elisp-load-path variable has to be a list")
+                      (kill-emacs 1))
+
+
+                     ((and (eq var 'pre-commit-elisp-error-on-compile-warning)
+                           (not (booleanp pre-commit-elisp-error-on-compile-warning)))
+                      (message
+                       "Error: The pre-commit-elisp-error-on-compile-warning variable has to be a boolean")
+                      (kill-emacs 1)))
+
+                    (when pre-commit-elisp-debug
+                      (message "[DEBUG] %sApplied dir-local: %S = %s"
+                               prefix var val)))
+                (when pre-commit-elisp-debug
+                  (message "[DEBUG] IGNORE: %s" var))))))
+
+        (when pre-commit-elisp-debug
+          (message "[DEBUG] VARIABLES:")
+          (message "  - pre-commit-elisp-load-path: %S"
+                   (when (boundp 'pre-commit-elisp-load-path)
+                     pre-commit-elisp-load-path))
+          (message "  - pre-commit-elisp-error-on-compile-warning: %S"
+                   (when (boundp 'pre-commit-elisp-error-on-compile-warning)
+                     pre-commit-elisp-error-on-compile-warning)))
 
         ;; Recursively add other directories
         (let ((pre-commit-elisp-load-path
@@ -97,63 +155,80 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
                                           nil
                                           ".el")))))
              (compiled-dest nil))
-        (unwind-protect
-            (progn
-              ;; Add the file's directory to load-path
-              (when (not (member dir load-path))
-                (message "%sAdd to load-path: %s" prefix dir)
-                (push dir load-path))
 
-              (when (and tmpfile
-                         (eq compile-type 'byte))
+        ;; Add the file's directory to load-path
+        (when (not (member dir load-path))
+          (message "%sAdd to load-path: %s" prefix dir)
+          (push dir load-path))
+
+        (let ((default-directory dir))
+          (cond
+           ((eq compile-type 'byte)
+            ;; Byte-compile
+            (let ((el-file (if tmpfile tmpfile file))
+                  (delete-tmpfile (when tmpfile t)))
+              (when tmpfile
                 (copy-file file tmpfile t))
 
-              (let ((default-directory dir))
-                (if (eq compile-type 'byte)
-                    (if (byte-compile-file (if tmpfile tmpfile file))
-                        (message "%sSuccess: %s" prefix file)
-                      (setq failure t)
-                      (message "%sFailure: %s" prefix file))
-                  (condition-case nil
-                      (progn
-                        (if (fboundp 'native-compile)
-                            (setq compiled-dest
-                                  (native-compile file
-                                                  (if tmpfile tmpfile nil)))
-                          (error "Undefined function: native-compile"))
+              (unwind-protect
+                  (progn
+                    (message "[INFO] Byte compile: %s" el-file)
+                    (let ((byte-compile-error-on-warn
+                           (bound-and-true-p
+                            pre-commit-elisp-error-on-compile-warning)))
+                      (condition-case err
+                          (setq failure
+                                (let ((result (byte-compile-file el-file)))
+                                  (if (eq result 'no-byte-compile)
+                                      nil
+                                    (not result))))
+                        (error
+                         (message "%s" (error-message-string err))
+                         (setq failure t)
+                         nil)))
 
-                        (if compiled-dest
-                            (message "%sSuccess: %s" prefix file)
-                          (setq failure t)
-                          (message "%sFailure: %s" prefix file)))
-                    (error
-                     (setq failure t)
-                     (message "%sFailure: %s" prefix file))))))
-          (when tmpfile
-            (when (file-exists-p tmpfile)
-              (ignore-errors
-                (delete-file tmpfile)))
-            (if (eq compile-type 'byte)
-                (let ((dest (funcall (if (bound-and-true-p
-                                          byte-compile-dest-file-function)
-                                         byte-compile-dest-file-function
-                                       #'byte-compile-dest-file)
-                                     tmpfile)))
-                  (when (and dest
-                             (file-exists-p dest))
-                    (ignore-errors
-                      (delete-file dest))))
-              (when (and compiled-dest (file-exists-p compiled-dest))
-                (ignore-errors
-                  (delete-file compiled-dest))))))))
+                    (if failure
+                        (message "%sFailure: %s" prefix file)
+                      (message "%sSuccess: %s" prefix file)))
+                ;; Unwind protect
+                (when delete-tmpfile
+                  (when pre-commit-elisp-debug
+                    (message "[DEBUG] Delete: %s" tmpfile))
+                  (ignore-errors
+                    (delete-file tmpfile))))))
+
+           ;; Native compile
+           ((eq compile-type 'native)
+            (if (fboundp 'native-compile)
+                (progn
+                  (let ((dest-file tmpfile))
+                    (unwind-protect
+                        (progn
+                          (message "[INFO] Native compile: %s -> %s"
+                                   file dest-file)
+                          (setq compiled-dest
+                                (let ((byte-compile-error-on-warn
+                                       (bound-and-true-p
+                                        pre-commit-elisp-error-on-compile-warning)))
+                                  (condition-case err
+                                      (native-compile file dest-file)
+                                    (error
+                                     (message "%s" (error-message-string err))
+                                     (setq failure t)
+                                     nil)))))
+                      (when (and dest-file (file-exists-p dest-file))
+                        (when pre-commit-elisp-debug
+                          (message "[DEBUG] Delete: %s" dest-file))
+                        (ignore-errors
+                          (delete-file dest-file))))))
+              (error "Undefined function: native-compile"))
+
+            (if compiled-dest
+                (message "%sSuccess: %s" prefix file)
+              (setq failure t)
+              (message "%sFailure: %s" prefix file)))))))
     (when failure
       (kill-emacs 1))))
-
-(defun pre-commit-elisp-byte-compile (prefix use-tmp-files)
-  "Byte-compile the files passed as arguments.
-PREFIX is the prefix used for displaying messages.
-USE-TMP-FILES compile in temporary files instead in the elisp file directory."
-  (pre-commit-elisp--compile prefix use-tmp-files 'byte))
 
 (defun pre-commit-elisp-native-compile (prefix use-tmp-files)
   "Native-compile the files passed as arguments.
@@ -191,7 +266,8 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
           (let ((indent-end (point)))
             (when (> indent-end line-beg)
               (untabify line-beg indent-end))))
-        (forward-line 1))
+        (if (= (forward-line 1) 1)
+            (goto-char (point-max))))
 
       ;; Reindent
       (let ((beg (point-min))

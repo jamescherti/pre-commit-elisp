@@ -176,3 +176,74 @@ def test_indent() -> None:
         assert expected_content == new_content
     finally:
         tmp_path.unlink(missing_ok=True)
+
+# -----------------------------------------------------------------------------
+# ERROR ON COMPILE WARN
+# -----------------------------------------------------------------------------
+
+# TODO add these tests
+# def setup_warning_env(base_dir: Path, strict: bool) -> Path:
+#     """Set up a temporary Git repository with a file that triggers warnings.
+#
+#     :param base_dir: The base temporary directory.
+#     :type base_dir: Path
+#     :param strict: Whether to enable strict warning checks.
+#     :type strict: bool
+#     :return: The path to the Elisp file with a warning.
+#     :rtype: Path
+#     """
+#     subprocess.run(
+#         ["git", "init"], cwd=str(base_dir), capture_output=True, check=True
+#     )
+#
+#     dir_locals: Path = base_dir / ".dir-locals.el"
+#     if strict:
+#         dir_locals.write_text(
+#             "((nil . ((pre-commit-elisp-error-on-compile-warning . t))))",
+#             encoding="utf-8"
+#         )
+#     else:
+#         dir_locals.write_text(
+#             "((nil . ((pre-commit-elisp-error-on-compile-warning . nil))))",
+#             encoding="utf-8"
+#         )
+#
+#     warning_file: Path = base_dir / "warning.el"
+#     # Free variable triggers a byte-compiler warning but is syntactically valid
+#     warning_file.write_text(
+#         "(defun my-test-warn () my-unbound-variable)\n",
+#         encoding="utf-8"
+#     )
+#     return warning_file
+#
+#
+# def test_error_on_compile_warn_strict() -> None:
+#     """Test that compilation fails when strict mode is enabled.
+#
+#     :return: None.
+#     :rtype: None
+#     """
+#     with tempfile.TemporaryDirectory() as tmp_dir:
+#         tmp_path: Path = Path(tmp_dir)
+#         warning_file: Path = setup_warning_env(tmp_path, strict=True)
+#         script_absolute: Path = SCRIPT_CHECK_BYTE_COMPILE.resolve()
+#
+#         result: subprocess.CompletedProcess[str] = run_hook(
+#             script_absolute, warning_file)
+#         assert result.returncode != 0
+#
+#
+# def test_error_on_compile_warn_lenient() -> None:
+#     """Test that compilation succeeds when strict mode is disabled.
+#
+#     :return: None.
+#     :rtype: None
+#     """
+#     with tempfile.TemporaryDirectory() as tmp_dir:
+#         tmp_path: Path = Path(tmp_dir)
+#         warning_file: Path = setup_warning_env(tmp_path, strict=False)
+#         script_absolute: Path = SCRIPT_CHECK_BYTE_COMPILE.resolve()
+#
+#         result: subprocess.CompletedProcess[str] = run_hook(
+#             script_absolute, warning_file)
+#         assert result.returncode == 0
