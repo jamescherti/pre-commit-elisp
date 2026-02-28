@@ -27,7 +27,7 @@
 
 ;;; Code:
 
-(defvar pre-commit-elisp-debug t)
+(defvar pre-commit-elisp-debug nil)
 
 (defvar pre-commit-elisp-error-on-compile-warning nil)
 (defvar pre-commit-elisp-load-path nil)
