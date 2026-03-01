@@ -15,7 +15,7 @@ If this enhances your workflow, please show your support by **⭐ starring pre-c
 
 1. Install [pre-commit](https://pre-commit.com/).
 
-2. Add this repository as a local hook in your `.pre-commit-config.yaml`:
+2. Add the following to your `.pre-commit-config.yaml`:
 
 ```yaml
 ---
@@ -29,11 +29,11 @@ repos:
 
       # Byte-compile .el files to identify compilation errors early
       - id: elisp-check-byte-compile
-        exclude: \.dir-locals\.el$
+        exclude: '\.dir-locals\.el$'
 
       # Optional: Native-compile .el files to identify compilation errors early
       # - id: elisp-check-native-compile
-      #   exclude: \.dir-locals\.el$
+      #   exclude: '\.dir-locals\.el$'
 
       # Optional: Indent Elisp files according to Emacs Lisp style conventions
       # - id: elisp-indent
