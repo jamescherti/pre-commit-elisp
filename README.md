@@ -22,7 +22,7 @@ If this enhances your workflow, please show your support by **⭐ starring pre-c
 
 repos:
   - repo: https://github.com/jamescherti/pre-commit-elisp
-    rev: v1.0.8
+    rev: v1.0.9
     hooks:
       # Validate that all parentheses in .el files are correctly balanced
       - id: elisp-check-parens
