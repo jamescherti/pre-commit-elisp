@@ -318,7 +318,8 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
             (goto-char beg)
             (indent-region beg end))))
 
-      (write-region (point-min) (point-max) file))))
+      (let ((inhibit-quit t))
+        (write-region (point-min) (point-max) file)))))
 
 (provide 'pre-commit-elisp)
 
