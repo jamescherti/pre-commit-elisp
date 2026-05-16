@@ -288,14 +288,6 @@ USE-TMP-FILES compile in temporary files instead in the elisp file directory."
   (dolist (file command-line-args-left)
     (message "[ELISP INDENT] %s" file)
     (with-temp-buffer
-      (put 'cl-letf 'lisp-indent-function 1)
-      (put 'lightemacs-use-package 'lisp-indent-function 0)
-      (put 'lightemacs-define-keybindings 'lisp-indent-function 1)
-      (put 'lightemacs-verbose-message 'lisp-indent-function 0)
-      (put 'lightemacs-save-window-hscroll 'lisp-indent-function 0)
-      (put 'lightemacs-define-mode-add-hook-to 'lisp-indent-function 0)
-      (put 'lightemacs-save-window-start 'lisp-indent-function 0)
-
       ;; Modify settings
       (setq-local lexical-binding t)
       (insert-file-contents file)
