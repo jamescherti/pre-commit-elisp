@@ -1,5 +1,8 @@
 # pre-commit-elisp - Emacs Lisp (Elisp) Git pre-commit hooks
 
+- Author: James Cherti <[https://www.jamescherti.com/](https://www.jamescherti.com/)>
+- License: GPL
+
 The [pre-commit-elisp](https://github.com/jamescherti/pre-commit-elisp) repository offers pre-commit hooks for **Emacs Lisp (Elisp)** projects. These hooks enforce code quality and consistency by performing automated checks on `.el` files prior to committing changes:
 
 * **`elisp-check-parens`**: Validates that all parentheses in `.el` files are correctly balanced.
