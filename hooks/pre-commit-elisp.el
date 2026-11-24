@@ -103,7 +103,8 @@ PREFIX is the same prefix as `pre-commit-elisp--compile'."
                                           (list "."))))
         (dolist (dir pre-commit-elisp-load-path)
           (let ((default-directory (file-name-as-directory
-                                    (expand-file-name dir))))
+                                    (expand-file-name dir)))
+                (normal-top-level-add-subdirs-inode-list nil))
             ;; Push the current directory to load path
             (if (string-suffix-p "/" dir)
                 (progn
